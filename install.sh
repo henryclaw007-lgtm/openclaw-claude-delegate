@@ -86,7 +86,7 @@ resolve_source_dir() {
   else
     url="https://codeload.github.com/$REPO_SLUG/tar.gz/refs/tags/$VERSION"
   fi
-  log "Downloading $url"
+  log "Downloading $url" >&2
   if curl --retry 3 --retry-all-errors --retry-delay 2 -fsSL "$url" -o "$archive"; then
     tar -xzf "$archive" -C "$TMP_DIR"
     find "$TMP_DIR" -mindepth 1 -maxdepth 1 -type d | head -n 1
@@ -95,7 +95,7 @@ resolve_source_dir() {
 
   if command -v git >/dev/null 2>&1; then
     local clone_dir="$TMP_DIR/repo"
-    log "Archive download failed, falling back to git clone"
+    log "Archive download failed, falling back to git clone" >&2
     git clone --depth 1 --branch "$VERSION" "https://github.com/$REPO_SLUG.git" "$clone_dir" >/dev/null 2>&1 || fail "git clone fallback failed"
     printf '%s\n' "$clone_dir"
     return 0
