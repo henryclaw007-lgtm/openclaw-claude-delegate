@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_SLUG="${CLAUDE_DELEGATE_REPO:-henryclaw007-lgtm/openclaw-claude-delegate}"
+REPO_SLUG="${CLAUDE_DELEGATE_REPO:-StoicEnso/openclaw-claude-delegate}"
 VERSION="${CLAUDE_DELEGATE_VERSION:-main}"
 SKILL_NAME="${CLAUDE_DELEGATE_SKILL_NAME:-claude-delegate}"
 TARGET_DIR="${CLAUDE_DELEGATE_TARGET_DIR:-${OPENCLAW_SKILLS_DIR:-$HOME/.openclaw/skills}/$SKILL_NAME}"

@@ -56,7 +56,7 @@ Do **not** use this when the user explicitly wants an ACP thread or chat harness
 ### Option A, one-command bootstrap (recommended)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/henryclaw007-lgtm/openclaw-claude-delegate/v0.2.2/install.sh | bash -s -- --version v0.2.2
+curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.2/install.sh | bash -s -- --version v0.2.2
 ```
 
 This installs the skill into `~/.openclaw/skills/claude-delegate`, creates a `claude-delegate` CLI symlink in `~/.local/bin`, and runs a setup check.
@@ -64,7 +64,7 @@ This installs the skill into `~/.openclaw/skills/claude-delegate`, creates a `cl
 ### Option B, clone then install
 
 ```bash
-git clone https://github.com/henryclaw007-lgtm/openclaw-claude-delegate.git
+git clone https://github.com/StoicEnso/openclaw-claude-delegate.git
 cd openclaw-claude-delegate
 bash install.sh
 ```
