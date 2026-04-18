@@ -1,5 +1,7 @@
 # OpenClaw Claude Delegate
 
+Give Claude back to OpenClaw.
+
 A reusable OpenClaw skill for running Claude Code as a **local delegated worker** with:
 
 - dispatch, poll, result, and resume
@@ -7,9 +9,17 @@ A reusable OpenClaw skill for running Claude Code as a **local delegated worker*
 - optional non-root runner execution
 - self-heal hooks for Claude binary, auth sync, and runner-local acpx install
 
-This is for the boring, reliable local wrapper lane, not the ACP chat-harness lane.
+This is the boring, reliable local wrapper lane, not the ACP chat-harness lane.
 
-**Real advantage:** it lets any OpenClaw agent delegate into a locally authenticated Claude Code subscription lane, including a non-root `bypassPermissions` worker path, without pretending ACP or third-party harnesses can use Claude subscription access the same way.
+**Real advantage:** it gives any OpenClaw agent a locally authenticated Claude Code subscription lane, including a non-root `bypassPermissions` worker path, without pretending ACP or third-party harnesses can use Claude subscription access the same way.
+
+## Why people will star it
+
+- It restores Claude inside OpenClaw instead of forcing people to choose one or the other.
+- It gives you a real local worker lane, not a fake integration.
+- It installs in one command.
+- It creates a usable `claude-delegate` CLI, so the workflow is easy to remember.
+- It keeps the no-permissions worker path separate from ACP, where it belongs.
 
 ## Why this exists
 
@@ -54,18 +64,16 @@ Use this when you want Claude Code to run as a local worker with explicit monito
 
 Do **not** use this when the user explicitly wants an ACP thread or chat harness. That is a different lane.
 
-## Install options
-
-### Fastest install
+## Install in one line
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.3/install.sh | bash -s -- --version v0.2.3
 ```
 
-What that does:
-- installs the skill into `~/.openclaw/skills/claude-delegate`
-- creates `~/.local/bin/claude-delegate`
-- runs a setup check
+That will:
+- install the skill into `~/.openclaw/skills/claude-delegate`
+- create `~/.local/bin/claude-delegate`
+- run a setup check
 
 After install:
 
@@ -74,15 +82,13 @@ claude-delegate doctor
 claude-delegate dispatch scratch 0.10 sonnet smoke "Reply with exactly CLAUDE-DELEGATE-SMOKE-OK"
 ```
 
-### Option A, one-command bootstrap (recommended)
+If you prefer a local clone:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.3/install.sh | bash -s -- --version v0.2.3
 ```
 
-This installs the skill into `~/.openclaw/skills/claude-delegate`, creates a `claude-delegate` CLI symlink in `~/.local/bin`, and runs a setup check.
-
-### Option B, clone then install
+### Clone then install
 
 ```bash
 git clone https://github.com/StoicEnso/openclaw-claude-delegate.git
@@ -90,7 +96,7 @@ cd openclaw-claude-delegate
 bash install.sh
 ```
 
-### Option C, npm/npx installer (package is publish-ready)
+### npm/npx installer (package is publish-ready)
 
 ```bash
 npx openclaw-claude-delegate
