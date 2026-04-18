@@ -82,12 +82,12 @@ resolve_source_dir() {
   local archive="$TMP_DIR/claude-delegate.tar.gz"
   local url
   if [ "$VERSION" = "main" ]; then
-    url="https://github.com/$REPO_SLUG/archive/refs/heads/main.tar.gz"
+    url="https://codeload.github.com/$REPO_SLUG/tar.gz/refs/heads/main"
   else
-    url="https://github.com/$REPO_SLUG/archive/refs/tags/$VERSION.tar.gz"
+    url="https://codeload.github.com/$REPO_SLUG/tar.gz/refs/tags/$VERSION"
   fi
   log "Downloading $url"
-  curl -fsSL "$url" -o "$archive"
+  curl --retry 3 --retry-all-errors --retry-delay 2 -fsSL "$url" -o "$archive"
   tar -xzf "$archive" -C "$TMP_DIR"
   find "$TMP_DIR" -mindepth 1 -maxdepth 1 -type d | head -n 1
 }
