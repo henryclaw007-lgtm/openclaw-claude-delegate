@@ -64,10 +64,20 @@ Use this when you want Claude Code to run as a local worker with explicit monito
 
 Do **not** use this when the user explicitly wants an ACP thread or chat harness. That is a different lane.
 
-## Install in one line
+## Install
+
+### OpenClaw native install from ClawHub
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.3/install.sh | bash -s -- --version v0.2.3
+openclaw skills install openclaw-claude-delegate
+```
+
+That is the easiest path if you are already inside OpenClaw.
+
+### One-line installer
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.4/install.sh | bash -s -- --version v0.2.4
 ```
 
 That will:
@@ -83,10 +93,6 @@ claude-delegate dispatch scratch 0.10 sonnet smoke "Reply with exactly CLAUDE-DE
 ```
 
 If you prefer a local clone:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.3/install.sh | bash -s -- --version v0.2.3
-```
 
 ### Clone then install
 

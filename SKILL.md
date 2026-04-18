@@ -1,11 +1,15 @@
 ---
 name: claude-delegate
-description: "Run local Claude Code through a monitored wrapper with dispatch, poll, result, and resume, usually with a non-root runner user. Use when: you want a stable local Claude CLI worker lane in a bounded workspace, need resume/monitoring, or need Claude auth separate from OpenClaw providers. Don't use when: the user explicitly wants an ACP chat harness or thread, use acp-router plus sessions_spawn(runtime: \"acp\"); the task is a simple edit or shell command, use edit/exec directly; or the local Claude runner is not set up yet, read references/setup.md first."
+description: "Give Claude back to OpenClaw through a local Claude Code delegation lane with dispatch, poll, result, resume, and an optional non-root bypassPermissions runner. Use when: you want Claude subscription access available to OpenClaw agents through a stable local worker lane, need resume/monitoring in a bounded workspace, or need Claude auth separate from OpenClaw providers. Don't use when: the user explicitly wants an ACP chat harness or thread, use acp-router plus sessions_spawn(runtime: \"acp\"); the task is a simple edit or shell command, use edit/exec directly; or the local Claude runner is not set up yet, read references/setup.md first."
 ---
 
 # Claude Delegate
 
+Give Claude back to OpenClaw.
+
 Use this skill when Claude Code should run as a **local delegated worker**, not as an ACP chat harness.
+
+The whole point is simple: third-party harnesses do not reliably get Claude subscription access, but OpenClaw operators still want Claude-quality work inside their agent system.
 
 ## Stable entrypoints
 
