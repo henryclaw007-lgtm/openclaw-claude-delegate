@@ -9,6 +9,8 @@ A reusable OpenClaw skill for running Claude Code as a **local delegated worker*
 
 This is for the boring, reliable local wrapper lane, not the ACP chat-harness lane.
 
+**Real advantage:** it lets any OpenClaw agent delegate into a locally authenticated Claude Code subscription lane, including a non-root `bypassPermissions` worker path, without pretending ACP or third-party harnesses can use Claude subscription access the same way.
+
 ## Why this exists
 
 Claude Code subscription access is valuable, but third-party harnesses cannot reliably use that subscription path directly. This wrapper gives any OpenClaw agent a clean delegation lane into local Claude Code without turning the whole runtime into a Claude-specific harness.
@@ -18,6 +20,7 @@ Use it when you want:
 - a bounded workdir instead of full-session sprawl
 - a non-root runner model that survives OpenClaw updates better
 - a way for other agents to delegate premium Claude work intentionally
+- a reliable `bypassPermissions` lane that is separate from the main OpenClaw runtime
 
 ## How it works
 
@@ -53,10 +56,28 @@ Do **not** use this when the user explicitly wants an ACP thread or chat harness
 
 ## Install options
 
+### Fastest install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.3/install.sh | bash -s -- --version v0.2.3
+```
+
+What that does:
+- installs the skill into `~/.openclaw/skills/claude-delegate`
+- creates `~/.local/bin/claude-delegate`
+- runs a setup check
+
+After install:
+
+```bash
+claude-delegate doctor
+claude-delegate dispatch scratch 0.10 sonnet smoke "Reply with exactly CLAUDE-DELEGATE-SMOKE-OK"
+```
+
 ### Option A, one-command bootstrap (recommended)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.2/install.sh | bash -s -- --version v0.2.2
+curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.3/install.sh | bash -s -- --version v0.2.3
 ```
 
 This installs the skill into `~/.openclaw/skills/claude-delegate`, creates a `claude-delegate` CLI symlink in `~/.local/bin`, and runs a setup check.
@@ -122,6 +143,26 @@ export CLAUDE_DELEGATE_PROFILES=/abs/path/to/profiles.json
 ```
 
 Profile paths support `~` and environment variable expansion like `${HOME}`.
+
+## ACP vs local delegate lane
+
+This part matters.
+
+**No**, the fully delegated no-permissions lane is **not automatically the ACP lane**.
+
+- **ACP lane** = chat/thread harness behavior inside OpenClaw ACP
+- **Claude Delegate lane** = local Claude CLI worker launched through this wrapper
+
+The `bypassPermissions` non-root runner path lives in the **local delegate lane**.
+That is the real value here.
+
+So if you want:
+- Claude subscription access
+- local CLI execution
+- optional non-root `bypassPermissions`
+- resume/poll/result tracking
+
+use **Claude Delegate**, not ACP.
 
 ## Non-root runner defaults
 

@@ -7,13 +7,16 @@ A local Claude Code delegation lane with:
 - optional non-root runner execution
 - profile-based workdir scoping
 - runner self-heal for Claude binary, auth file, and acpx install when you use the provided ensure script
+- a practical way for any OpenClaw agent to reach a locally authenticated Claude subscription worker
+
+The real advantage is the **local delegated non-root `bypassPermissions` lane**. That is separate from ACP and exists because third-party harnesses do not reliably get Claude subscription access.
 
 ## Quick install
 
 ### Recommended bootstrap
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.2/install.sh | bash -s -- --version v0.2.2
+curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.3/install.sh | bash -s -- --version v0.2.3
 ```
 
 That installs the skill into `~/.openclaw/skills/claude-delegate`, creates `~/.local/bin/claude-delegate`, and runs a setup check.
@@ -31,6 +34,14 @@ That installs the skill into `~/.openclaw/skills/claude-delegate`, creates `~/.l
    - `CLAUDE_PERMISSION_MODE`
    - `CLAUDE_BACKEND`
 6. Run `claude-delegate doctor` or `bash scripts/claude-delegate.sh doctor`.
+
+## Install result
+
+After a normal install you should have:
+- skill folder: `~/.openclaw/skills/claude-delegate`
+- CLI path: `~/.local/bin/claude-delegate`
+
+If `~/.local/bin` is not on your `PATH`, add it in your shell profile.
 
 ## Stable commands
 
@@ -79,6 +90,16 @@ If your host uses different source paths, override them before calling the wrapp
 - `ROOT_CLAUDE_CREDS`
 - `ROOT_ACPX_CONFIG`
 - `DEFAULT_ACPX_SPEC`
+
+## ACP vs delegate lane
+
+Do not blur these together:
+
+- **ACP** is the OpenClaw chat/thread harness lane
+- **Claude Delegate** is the local Claude CLI wrapper lane
+
+If you want the non-root `bypassPermissions` worker path, use **Claude Delegate**.
+Do not assume ACP automatically inherits that execution model.
 
 ## What not to assume
 
