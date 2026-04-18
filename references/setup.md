@@ -13,7 +13,7 @@ A local Claude Code delegation lane with:
 ### Recommended bootstrap
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/henryclaw007-lgtm/openclaw-claude-delegate/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/henryclaw007-lgtm/openclaw-claude-delegate/v0.2.2/install.sh | bash -s -- --version v0.2.2
 ```
 
 That installs the skill into `~/.openclaw/skills/claude-delegate`, creates `~/.local/bin/claude-delegate`, and runs a setup check.
