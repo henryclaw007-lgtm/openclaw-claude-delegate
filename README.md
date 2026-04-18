@@ -28,21 +28,42 @@ Do **not** use this when the user explicitly wants an ACP thread or chat harness
 
 ## Quick install
 
-Clone or copy this folder into your OpenClaw skills directory as `claude-delegate/`.
+### Option A, one-command bootstrap (recommended)
 
 ```bash
-cp -R openclaw-claude-delegate ~/.openclaw/skills/claude-delegate
+curl -fsSL https://raw.githubusercontent.com/henryclaw007-lgtm/openclaw-claude-delegate/main/install.sh | bash
 ```
 
-Then:
+This installs the skill into `~/.openclaw/skills/claude-delegate`, creates a `claude-delegate` CLI symlink in `~/.local/bin`, and runs a setup check.
+
+### Option B, clone then install
 
 ```bash
-cd ~/.openclaw/skills/claude-delegate
-bash scripts/setup.sh --check-only
-bash scripts/claude-delegate.sh doctor
+git clone https://github.com/henryclaw007-lgtm/openclaw-claude-delegate.git
+cd openclaw-claude-delegate
+bash install.sh
 ```
+
+### Option C, npm/npx installer (package is publish-ready)
+
+```bash
+npx openclaw-claude-delegate
+```
+
+This will work once the npm package is published.
 
 ## Quick start
+
+If you used the installer and accepted the CLI link:
+
+```bash
+claude-delegate doctor
+claude-delegate dispatch scratch 0.10 sonnet smoke "Reply with exactly CLAUDE-DELEGATE-SMOKE-OK"
+claude-delegate list --all
+claude-delegate result <task-id>
+```
+
+Repo-local form still works too:
 
 ```bash
 bash scripts/claude-delegate.sh dispatch scratch 0.10 sonnet smoke "Reply with exactly CLAUDE-DELEGATE-SMOKE-OK"
@@ -71,6 +92,19 @@ The wrapper defaults are tuned for a runner account like:
 - `CLAUDE_BACKEND=cli`
 
 Override those if your host layout differs.
+
+## Prerequisites
+
+Minimum:
+- OpenClaw installed
+- Claude Code installed and authenticated
+- bash
+- python3
+
+For the full non-root self-heal path, you also want:
+- npm
+- sudo and permission to switch to the runner user
+- a runner user such as `ccbot`
 
 ## Important reality checks
 

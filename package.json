@@ -1,0 +1,29 @@
+{
+  "name": "openclaw-claude-delegate",
+  "version": "0.2.0",
+  "description": "Installer and packaged OpenClaw skill for running Claude Code through a monitored local delegate wrapper.",
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "openclaw-claude-delegate": "bin/openclaw-claude-delegate.js"
+  },
+  "files": [
+    "bin/",
+    "scripts/",
+    "references/",
+    "SKILL.md",
+    "profiles.json",
+    "install.sh",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "openclaw",
+    "claude-code",
+    "agent-skill",
+    "automation"
+  ]
+}

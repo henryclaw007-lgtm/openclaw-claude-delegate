@@ -10,27 +10,43 @@ A local Claude Code delegation lane with:
 
 ## Quick install
 
+### Recommended bootstrap
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/henryclaw007-lgtm/openclaw-claude-delegate/main/install.sh | bash
+```
+
+That installs the skill into `~/.openclaw/skills/claude-delegate`, creates `~/.local/bin/claude-delegate`, and runs a setup check.
+
+### Clone/install flow
+
 1. Install Claude Code and log in once.
-2. Copy this skill into your OpenClaw skills directory.
-3. Edit `profiles.json` for your project roots, or keep a host-local profiles file and export `CLAUDE_DELEGATE_PROFILES=/abs/path/to/profiles.json`.
-4. If you want a non-root runner, set these as needed:
+2. Clone this repo.
+3. Run `bash install.sh`.
+4. Edit `profiles.json` for your project roots, or keep a host-local profiles file and export `CLAUDE_DELEGATE_PROFILES=/abs/path/to/profiles.json`.
+5. If you want a non-root runner, set these as needed:
    - `CLAUDE_RUNNER_USER`
    - `CLAUDE_RUNNER_HOME`
    - `CLAUDE_BIN`
    - `CLAUDE_PERMISSION_MODE`
    - `CLAUDE_BACKEND`
-5. Run `scripts/setup.sh --check-only`.
-6. Run `scripts/claude-delegate.sh doctor`.
+6. Run `claude-delegate doctor` or `bash scripts/claude-delegate.sh doctor`.
 
 ## Stable commands
 
 ```bash
+claude-delegate dispatch <profile> <budget> <model> <label> "<task>"
+claude-delegate poll <task-id>
+claude-delegate result <task-id>
+claude-delegate resume <task-id> <budget> "<follow-up>"
+claude-delegate list --all
+claude-delegate doctor
+```
+
+Repo-local form:
+
+```bash
 bash scripts/claude-delegate.sh dispatch <profile> <budget> <model> <label> "<task>"
-bash scripts/claude-delegate.sh poll <task-id>
-bash scripts/claude-delegate.sh result <task-id>
-bash scripts/claude-delegate.sh resume <task-id> <budget> "<follow-up>"
-bash scripts/claude-delegate.sh list --all
-bash scripts/claude-delegate.sh doctor
 ```
 
 ## Profiles
@@ -76,6 +92,16 @@ If your host uses different source paths, override them before calling the wrapp
 2. `bash scripts/claude-delegate.sh doctor`
 3. `bash scripts/claude-delegate.sh dispatch scratch 0.10 sonnet smoke "Reply with exactly CLAUDE-DELEGATE-SMOKE-OK"`
 4. `bash scripts/claude-delegate.sh result <task-id>`
+
+## npm / npx note
+
+This repo now includes `package.json` and a small installer bin so it is npm-publish ready. The intended command is:
+
+```bash
+npx openclaw-claude-delegate
+```
+
+That package still needs to be published to npm before this command works for the public.
 
 ## Packaging note
 
