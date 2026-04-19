@@ -47,13 +47,17 @@ If you enable the non-root path, `scripts/ensure-nonroot-delegation.sh` also syn
 - acpx config into the runner home
 - runner-local acpx install under `~/.local/share/clawd/vendor/acpx/`
 
+The wrapper also bootstraps Claude with local coordination context by telling it to discover/read nearby `CLAUDE.delegate.md`, `AGENTS.md`, `TOOLS.md`, and `README.md` files before substantive work.
+
 ## What is in this repo
 
 - `SKILL.md` — the skill entrypoint
+- `CLAUDE.delegate.md` — repo-level delegate bootstrap guidance
 - `scripts/claude-delegate.sh` — stable wrapper command
 - `scripts/cc-profile.sh` — profile-aware wrapper
 - `scripts/cc-orchestrator.sh` — task registry, dispatch, poll, result, resume
 - `scripts/run-task.sh` — low-level Claude runner
+- `scripts/delegate-bootstrap.sh` — builds the default delegate bootstrap prompt from nearby doc files
 - `scripts/ensure-nonroot-delegation.sh` — non-root runner bootstrap/sync
 - `references/setup.md` — setup and portability notes
 - `profiles.json` — generic starter profiles
@@ -77,13 +81,14 @@ That is the easiest path if you are already inside OpenClaw.
 ### One-line installer
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.4/install.sh | bash -s -- --version v0.2.4
+curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.5/install.sh | bash -s -- --version v0.2.5
 ```
 
 That will:
 - install the skill into `~/.openclaw/skills/claude-delegate`
 - create `~/.local/bin/claude-delegate`
 - run a setup check
+- include the repo's default `CLAUDE.delegate.md` guidance in the installed package
 
 After install:
 
@@ -155,6 +160,24 @@ export CLAUDE_DELEGATE_PROFILES=/abs/path/to/profiles.json
 ```
 
 Profile paths support `~` and environment variable expansion like `${HOME}`.
+
+## Delegate instruction files
+
+By default, Claude Delegate appends bootstrap guidance that tells Claude to:
+- discover and read the nearest `CLAUDE.delegate.md` files from the workdir, its ancestors, and any `add_dirs`
+- inspect nearby `AGENTS.md`, `TOOLS.md`, and `README.md` files before substantive work
+
+Recommended layering:
+- workspace-level `CLAUDE.delegate.md`
+- shared folder-level `CLAUDE.delegate.md`
+- repo or skill-level `CLAUDE.delegate.md`
+
+Knobs:
+
+```bash
+export CLAUDE_DELEGATE_BOOTSTRAP=0
+export CLAUDE_DELEGATE_DOC_BASENAME=CLAUDE.delegate.md
+```
 
 ## ACP vs local delegate lane
 

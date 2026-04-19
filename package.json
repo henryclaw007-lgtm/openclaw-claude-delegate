@@ -1,6 +1,6 @@
 {
   "name": "openclaw-claude-delegate",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Installer and packaged OpenClaw skill that lets any agent delegate into a locally authenticated Claude Code subscription lane, including a non-root bypassPermissions worker path.",
   "license": "MIT",
   "type": "commonjs",
@@ -11,6 +11,7 @@
     "bin/",
     "scripts/",
     "references/",
+    "CLAUDE.delegate.md",
     "SKILL.md",
     "profiles.json",
     "install.sh",

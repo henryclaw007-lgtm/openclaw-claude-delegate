@@ -31,6 +31,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ENSURE_NONROOT_SCRIPT="$SCRIPT_DIR/ensure-nonroot-delegation.sh"
+DELEGATE_BOOTSTRAP_SCRIPT="$SCRIPT_DIR/delegate-bootstrap.sh"
 
 RESULTS_DIR="/tmp/claude-subagent-results"
 LOGS_DIR="/tmp/claude-subagent-logs"
@@ -60,6 +61,7 @@ build_runner_prefix() {
 
 augment_prompt_for_context() {
   local task="$1"
+  local workdir="${2:-.}"
   local extra=""
 
   if [ -n "${CC_ADD_DIRS:-}" ]; then
@@ -71,14 +73,34 @@ augment_prompt_for_context() {
     extra+="\n"
   fi
 
-  if [ -n "${CC_APPEND_SYSTEM_PROMPT:-}" ]; then
-    extra+="${CC_APPEND_SYSTEM_PROMPT}\n\n"
+  local delegate_system_prompt=""
+  delegate_system_prompt="$(effective_append_system_prompt "$workdir")"
+  if [ -n "$delegate_system_prompt" ]; then
+    extra+="${delegate_system_prompt}\n\n"
   fi
 
   if [ -n "$extra" ]; then
     printf '%b%s\n' "$extra" "$task"
   else
     printf '%s\n' "$task"
+  fi
+}
+
+effective_append_system_prompt() {
+  local workdir="$1"
+  local builtin_prompt=""
+  local user_prompt="${CC_APPEND_SYSTEM_PROMPT:-}"
+
+  if [ "${CLAUDE_DELEGATE_BOOTSTRAP:-1}" != "0" ] && [ -x "$DELEGATE_BOOTSTRAP_SCRIPT" ]; then
+    builtin_prompt="$("$DELEGATE_BOOTSTRAP_SCRIPT" system-prompt "$workdir" "${CC_ADD_DIRS:-}" 2>/dev/null || true)"
+  fi
+
+  if [ -n "$builtin_prompt" ] && [ -n "$user_prompt" ]; then
+    printf '%s\n\n%s\n' "$builtin_prompt" "$user_prompt"
+  elif [ -n "$builtin_prompt" ]; then
+    printf '%s\n' "$builtin_prompt"
+  elif [ -n "$user_prompt" ]; then
+    printf '%s\n' "$user_prompt"
   fi
 }
 
@@ -205,7 +227,7 @@ run_acpx_stream() {
   local prompt_file stdout_file started_at ended_at duration_ms
   prompt_file="${stream_file}.prompt"
   stdout_file="${stream_file}.stdout"
-  printf '%s' "$(augment_prompt_for_context "$task")" > "$prompt_file"
+  printf '%s' "$(augment_prompt_for_context "$task" "$workdir")" > "$prompt_file"
 
   local -a session_cmd=("${RUNNER_PREFIX[@]}" "$DELEGATE_ACPX_BIN" --cwd "$workdir" --approve-all --non-interactive-permissions fail --auth-policy skip claude sessions show "$session_name")
   if ! "${session_cmd[@]}" >/dev/null 2>&1; then
@@ -321,6 +343,7 @@ run_claude_stream() {
   local stream_file="$5"
   local stderr_file="$6"
   local timeout_secs="$7"
+  local delegate_system_prompt=""
 
   resolve_claude_base_cmd
   local -a cmd=("${CLAUDE_BASE_CMD[@]}" --print --output-format stream-json --verbose --max-budget-usd "$budget" --model "$model")
@@ -330,8 +353,9 @@ run_claude_stream() {
       [ -n "$d" ] && cmd+=(--add-dir "$d")
     done
   fi
-  if [ -n "${CC_APPEND_SYSTEM_PROMPT:-}" ]; then
-    cmd+=(--append-system-prompt "$CC_APPEND_SYSTEM_PROMPT")
+  delegate_system_prompt="$(effective_append_system_prompt "$workdir")"
+  if [ -n "$delegate_system_prompt" ]; then
+    cmd+=(--append-system-prompt "$delegate_system_prompt")
   fi
   cmd+=(-p "$task")
 
@@ -350,6 +374,8 @@ resume_claude_stream() {
   local stream_file="$4"
   local stderr_file="$5"
   local timeout_secs="$6"
+  local workdir="$7"
+  local delegate_system_prompt=""
 
   resolve_claude_base_cmd
   local -a cmd=("${CLAUDE_BASE_CMD[@]}" --print --output-format stream-json --verbose --max-budget-usd "$budget")
@@ -359,8 +385,9 @@ resume_claude_stream() {
       [ -n "$d" ] && cmd+=(--add-dir "$d")
     done
   fi
-  if [ -n "${CC_APPEND_SYSTEM_PROMPT:-}" ]; then
-    cmd+=(--append-system-prompt "$CC_APPEND_SYSTEM_PROMPT")
+  delegate_system_prompt="$(effective_append_system_prompt "$workdir")"
+  if [ -n "$delegate_system_prompt" ]; then
+    cmd+=(--append-system-prompt "$delegate_system_prompt")
   fi
   cmd+=(--resume "$session_id" -p "$task")
 
@@ -403,7 +430,7 @@ resume_backend_stream() {
   if [ "$DELEGATE_BACKEND" = "acpx" ]; then
     run_acpx_stream "$workdir" "$budget" "$model" "$task" "$stream_file" "$stderr_file" "$timeout_secs" "$session_id"
   else
-    resume_claude_stream "$session_id" "$budget" "$task" "$stream_file" "$stderr_file" "$timeout_secs"
+    resume_claude_stream "$session_id" "$budget" "$task" "$stream_file" "$stderr_file" "$timeout_secs" "$workdir"
   fi
 }
 
@@ -447,6 +474,7 @@ case "$MODE" in
     BUDGET="${3:-1.00}"
     TASK="${4:-}"
     WORKDIR="${5:-.}"
+    MODEL="${CC_MODEL:-opus}"
 
     if [ -z "$SESSION_ID" ] || [ -z "$TASK" ]; then
       echo '{"error": "Need session_id and task", "usage": "run-task.sh resume <session-id> <budget> <task> [workdir]"}' >&2

@@ -13,6 +13,8 @@ export CLAUDE_BIN="${CLAUDE_BIN:-/home/ccbot/.local/bin/claude}"
 export CLAUDE_PERMISSION_MODE="${CLAUDE_PERMISSION_MODE:-bypassPermissions}"
 export CLAUDE_BACKEND="${CLAUDE_BACKEND:-cli}"
 export CLAUDE_DELEGATE_PROFILES="${CLAUDE_DELEGATE_PROFILES:-$SKILL_ROOT/profiles.json}"
+export CLAUDE_DELEGATE_BOOTSTRAP="${CLAUDE_DELEGATE_BOOTSTRAP:-1}"
+export CLAUDE_DELEGATE_DOC_BASENAME="${CLAUDE_DELEGATE_DOC_BASENAME:-CLAUDE.delegate.md}"
 
 usage() {
   cat <<'EOF'
@@ -42,6 +44,8 @@ backend=$CLAUDE_BACKEND
 permission_mode=$CLAUDE_PERMISSION_MODE
 profiles_file=$CLAUDE_DELEGATE_PROFILES
 acpx_cache_root=$acpx_bin
+delegate_bootstrap=$CLAUDE_DELEGATE_BOOTSTRAP
+delegate_doc_basename=$CLAUDE_DELEGATE_DOC_BASENAME
 EOF
   echo
   echo "[root claude auth status]"

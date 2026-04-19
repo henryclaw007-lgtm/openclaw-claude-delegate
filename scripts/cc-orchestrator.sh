@@ -523,6 +523,7 @@ cmd_resume() {
 
   (
     CC_TASK_ID="$resume_id" \
+    CC_MODEL="$model" \
     CC_TIMEOUT="$timeout_secs" \
     CC_STREAM_FILE="$LOGS_DIR/${resume_id}.stream" \
     CC_STDERR_FILE="$LOGS_DIR/${resume_id}.stderr" \

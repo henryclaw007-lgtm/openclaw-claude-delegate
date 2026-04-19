@@ -36,7 +36,7 @@ openclaw skills install openclaw-claude-delegate
 ### One-line installer
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.4/install.sh | bash -s -- --version v0.2.4
+curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.5/install.sh | bash -s -- --version v0.2.5
 ```
 
 ## GitHub repo description
@@ -57,10 +57,11 @@ Give Claude back to OpenClaw through a local Claude Code delegation lane with mo
 ### Suggested tags
 latest,openclaw,claude-code,delegation,automation,local-worker,bypasspermissions
 
-### Changelog for v0.2.4
+### Changelog for v0.2.5
 - sharpened positioning around the real pain: Claude subscription access being cut out of OpenClaw flows
 - made install easier with a native OpenClaw install path and clearer quick-start copy
 - tightened README and SKILL messaging around the local delegate lane versus ACP
+- added default delegate bootstrap guidance via layered `CLAUDE.delegate.md` files plus nearby workspace docs
 
 ## X post
 
@@ -107,7 +108,7 @@ Fast install:
 `openclaw skills install openclaw-claude-delegate`
 
 Or:
-`curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.4/install.sh | bash -s -- --version v0.2.4`
+`curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.5/install.sh | bash -s -- --version v0.2.5`
 
 ### Post 5
 Repo:
@@ -129,7 +130,7 @@ It gives you:
 
 Install:
 - `openclaw skills install openclaw-claude-delegate`
-- `curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.4/install.sh | bash -s -- --version v0.2.4`
+- `curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.5/install.sh | bash -s -- --version v0.2.5`
 
 Repo:
 https://github.com/StoicEnso/openclaw-claude-delegate

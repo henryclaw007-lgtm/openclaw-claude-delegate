@@ -22,9 +22,10 @@ The whole point is simple: third-party harnesses do not reliably get Claude subs
 
 1. Read `references/setup.md` the first time you install or port this skill.
 2. Configure `profiles.json`, or point `CLAUDE_DELEGATE_PROFILES` at a host-local profiles file.
-3. Dispatch work through `scripts/claude-delegate.sh dispatch <profile> <budget> <model> <label> "<task>"`.
-4. Monitor with `poll`, `result`, `list`, or `doctor`.
-5. Use `resume` to continue the same Claude session instead of starting over.
+3. Keep local delegate instructions in the nearest `CLAUDE.delegate.md` files. The wrapper now tells Claude to discover/read those plus nearby `AGENTS.md`, `TOOLS.md`, and `README.md` docs before substantive work.
+4. Dispatch work through `scripts/claude-delegate.sh dispatch <profile> <budget> <model> <label> "<task>"`.
+5. Monitor with `poll`, `result`, `list`, or `doctor`.
+6. Use `resume` to continue the same Claude session instead of starting over.
 
 ## When to prefer this over ACP
 
@@ -39,9 +40,11 @@ Prefer ACP when the user explicitly asked for Claude Code as a chat/thread runti
 ## Files to load when needed
 
 - Setup, auth, env knobs, and profile customization: `references/setup.md`
+- Delegate bootstrap guidance for this repo: `CLAUDE.delegate.md`
 
 ## Notes
 
 - `scripts/cc-profile.sh` supports `CLAUDE_DELEGATE_PROFILES=/abs/path/to/profiles.json`.
 - Profile paths support `~` and environment variable expansion.
 - `scripts/ensure-nonroot-delegation.sh` supports env overrides for source paths if your Claude or acpx installs live somewhere else.
+- Delegate bootstrap is on by default. Disable with `CLAUDE_DELEGATE_BOOTSTRAP=0` or change the instruction filename with `CLAUDE_DELEGATE_DOC_BASENAME`.

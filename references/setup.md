@@ -8,6 +8,7 @@ A local Claude Code delegation lane with:
 - profile-based workdir scoping
 - runner self-heal for Claude binary, auth file, and acpx install when you use the provided ensure script
 - a practical way for any OpenClaw agent to reach a locally authenticated Claude subscription worker
+- default bootstrap guidance that tells Claude to discover/read nearby `CLAUDE.delegate.md`, `AGENTS.md`, `TOOLS.md`, and `README.md` files before substantive work
 
 The real advantage is the **local delegated non-root `bypassPermissions` lane**. That is separate from ACP and exists because third-party harnesses do not reliably get Claude subscription access.
 
@@ -40,8 +41,24 @@ That installs the skill into `~/.openclaw/skills/claude-delegate`, creates `~/.l
 After a normal install you should have:
 - skill folder: `~/.openclaw/skills/claude-delegate`
 - CLI path: `~/.local/bin/claude-delegate`
+- repo-level delegate guidance file: `CLAUDE.delegate.md`
 
 If `~/.local/bin` is not on your `PATH`, add it in your shell profile.
+
+## Delegate instruction files
+
+By default, Claude Delegate appends bootstrap guidance that tells Claude to:
+- discover and read the nearest `CLAUDE.delegate.md` files from the workdir, its ancestors, and any `add_dirs`
+- inspect nearby `AGENTS.md`, `TOOLS.md`, and `README.md` files before substantive work
+
+Recommended layering:
+- workspace-level `CLAUDE.delegate.md`
+- shared folder-level `CLAUDE.delegate.md`
+- repo or skill-level `CLAUDE.delegate.md`
+
+Knobs:
+- `CLAUDE_DELEGATE_BOOTSTRAP=0` disables the default bootstrap prompt
+- `CLAUDE_DELEGATE_DOC_BASENAME=SomethingElse.md` changes the filename Claude looks for
 
 ## Stable commands
 
