@@ -4,12 +4,13 @@ set -euo pipefail
 REPO_SLUG="${CLAUDE_DELEGATE_REPO:-StoicEnso/openclaw-claude-delegate}"
 VERSION="${CLAUDE_DELEGATE_VERSION:-main}"
 SKILL_NAME="${CLAUDE_DELEGATE_SKILL_NAME:-claude-delegate}"
-TARGET_DIR="${CLAUDE_DELEGATE_TARGET_DIR:-${OPENCLAW_SKILLS_DIR:-$HOME/.openclaw/skills}/$SKILL_NAME}"
+TARGET_DIR="${CLAUDE_DELEGATE_TARGET_DIR:-${OPENCLAW_SKILLS_DIR:-$HOME/.agents/skills}/$SKILL_NAME}"
 BIN_DIR="${CLAUDE_DELEGATE_BIN_DIR:-$HOME/.local/bin}"
 LINK_NAME="${CLAUDE_DELEGATE_LINK_NAME:-claude-delegate}"
 FORCE=0
 CREATE_LINK=1
 RUN_SETUP_CHECK=1
+RUN_SMOKE=0
 
 usage() {
   cat <<USAGE
@@ -24,6 +25,7 @@ Options:
   --link-name <name>   CLI command name to create (default: claude-delegate)
   --no-link            Skip creating the global CLI symlink
   --no-check           Skip post-install setup check
+  --smoke              Run a live scratch dispatch smoke test after install
   --force              Replace an existing install (backs it up first)
   --version <ref>      Install from GitHub ref when bootstrapping remotely (default: main)
   -h, --help           Show this help
@@ -31,6 +33,7 @@ Options:
 Examples:
   bash install.sh
   bash install.sh --force
+  bash install.sh --smoke
   curl -fsSL https://raw.githubusercontent.com/$REPO_SLUG/main/install.sh | bash
 USAGE
 }
@@ -46,6 +49,7 @@ while [ $# -gt 0 ]; do
     --link-name) LINK_NAME="$2"; shift 2 ;;
     --no-link) CREATE_LINK=0; shift ;;
     --no-check) RUN_SETUP_CHECK=0; shift ;;
+    --smoke) RUN_SMOKE=1; shift ;;
     --force) FORCE=1; shift ;;
     --version) VERSION="$2"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
@@ -121,6 +125,8 @@ fi
 
 mkdir -p "$TARGET_DIR"
 tar --exclude='.git' --exclude='node_modules' --exclude='.DS_Store' -C "$SOURCE_DIR" -cf - . | tar -xf - -C "$TARGET_DIR"
+find "$TARGET_DIR/scripts" -type f -name '*.sh' -exec chmod +x {} + 2>/dev/null || true
+chmod +x "$TARGET_DIR/install.sh" 2>/dev/null || true
 
 if [ "$CREATE_LINK" -eq 1 ]; then
   mkdir -p "$BIN_DIR"
@@ -135,7 +141,34 @@ fi
 log "Installed skill to $TARGET_DIR"
 if [ "$RUN_SETUP_CHECK" -eq 1 ]; then
   log "Running setup check"
-  bash "$TARGET_DIR/scripts/setup.sh" --check-only || true
+  if bash "$TARGET_DIR/scripts/setup.sh" --check-only; then
+    log "Setup check passed"
+  else
+    log "Setup check did not pass yet (usually Claude auth or runner config). Install still completed."
+  fi
+fi
+
+if command -v openclaw >/dev/null 2>&1; then
+  if openclaw skills check 2>/dev/null | grep -q "claude-delegate"; then
+    log "OpenClaw can see the claude-delegate skill"
+  else
+    log "OpenClaw did not list claude-delegate yet; restart/reload the agent if needed"
+  fi
+fi
+
+if [ "$RUN_SMOKE" -eq 1 ]; then
+  log "Running live scratch smoke test"
+  SMOKE_OUTPUT=$(bash "$TARGET_DIR/scripts/claude-delegate.sh" dispatch scratch 0.10 sonnet smoke "Reply with exactly CLAUDE-DELEGATE-SMOKE-OK" 2>&1 || true)
+  printf '%s\n' "$SMOKE_OUTPUT"
+  SMOKE_TASK_ID=$(printf '%s\n' "$SMOKE_OUTPUT" | python3 -c 'import json,sys; data=sys.stdin.read().strip(); print(json.loads(data).get("task_id", "")) if data.startswith("{") else print("")' 2>/dev/null || true)
+  if [ -n "$SMOKE_TASK_ID" ]; then
+    log "Smoke dispatched as $SMOKE_TASK_ID; waiting briefly"
+    sleep 3
+    bash "$TARGET_DIR/scripts/claude-delegate.sh" poll "$SMOKE_TASK_ID" || true
+    bash "$TARGET_DIR/scripts/claude-delegate.sh" result --text "$SMOKE_TASK_ID" || true
+  else
+    log "Smoke dispatch did not return a task id"
+  fi
 fi
 
 cat <<DONE
@@ -146,10 +179,10 @@ Next:
   1. Edit profiles if needed:
      $TARGET_DIR/profiles.json
   2. Run doctor:
-     bash $TARGET_DIR/scripts/claude-delegate.sh doctor
+     $LINK_NAME doctor
   3. Smoke test:
-     bash $TARGET_DIR/scripts/claude-delegate.sh dispatch scratch 0.10 sonnet smoke "Reply with exactly CLAUDE-DELEGATE-SMOKE-OK"
+     $LINK_NAME dispatch scratch 0.10 sonnet smoke "Reply with exactly CLAUDE-DELEGATE-SMOKE-OK"
 
 If the CLI link was created, you can also run:
-  $LINK_NAME doctor
+  $LINK_NAME list --all
 DONE

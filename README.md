@@ -81,14 +81,16 @@ That is the easiest path if you are already inside OpenClaw.
 ### One-line installer
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.5/install.sh | bash -s -- --version v0.2.5
+curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.6/install.sh | bash -s -- --version v0.2.6
 ```
 
 That will:
-- install the skill into `~/.openclaw/skills/claude-delegate`
+- install the skill into `~/.agents/skills/claude-delegate` by default
 - create `~/.local/bin/claude-delegate`
-- run a setup check
+- run a setup check against the same runner/OAuth environment the wrapper uses
 - include the repo's default `CLAUDE.delegate.md` guidance in the installed package
+
+For a live end-to-end install test, add `--smoke` to dispatch a tiny scratch task after installation.
 
 After install:
 
@@ -201,13 +203,20 @@ use **Claude Delegate**, not ACP.
 
 ## Non-root runner defaults
 
-The wrapper defaults are tuned for a runner account like:
+The wrapper is adaptive:
+
+- if run as root and `/home/ccbot` exists, it defaults to a `ccbot` runner;
+- otherwise it runs as the current user with the current `claude` binary;
+- if `CLAUDE_OAUTH_ENV_FILE` exists, it is sourced and `CLAUDE_CODE_OAUTH_TOKEN` is forwarded into the runner environment.
+
+For a `ccbot` runner account the effective defaults are:
 
 - `CLAUDE_RUNNER_USER=ccbot`
 - `CLAUDE_RUNNER_HOME=/home/ccbot`
 - `CLAUDE_BIN=/home/ccbot/.local/bin/claude`
 - `CLAUDE_PERMISSION_MODE=bypassPermissions`
 - `CLAUDE_BACKEND=cli`
+- `CLAUDE_OAUTH_ENV_FILE=~/.claude/.oauth-token.env` or `/root/.claude/.oauth-token.env` when running as root
 
 Override those if your host layout differs.
 

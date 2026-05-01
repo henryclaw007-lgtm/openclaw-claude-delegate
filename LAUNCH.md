@@ -36,7 +36,7 @@ openclaw skills install openclaw-claude-delegate
 ### One-line installer
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.5/install.sh | bash -s -- --version v0.2.5
+curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.6/install.sh | bash -s -- --version v0.2.6
 ```
 
 ## GitHub repo description
@@ -57,11 +57,12 @@ Give Claude back to OpenClaw through a local Claude Code delegation lane with mo
 ### Suggested tags
 latest,openclaw,claude-code,delegation,automation,local-worker,bypasspermissions
 
-### Changelog for v0.2.5
-- sharpened positioning around the real pain: Claude subscription access being cut out of OpenClaw flows
-- made install easier with a native OpenClaw install path and clearer quick-start copy
-- tightened README and SKILL messaging around the local delegate lane versus ACP
-- added default delegate bootstrap guidance via layered `CLAUDE.delegate.md` files plus nearby workspace docs
+### Changelog for v0.2.6
+- fixed installer defaults to use modern `~/.agents/skills/claude-delegate` skill discovery
+- made `setup.sh` use the same runner/OAuth environment as the real wrapper, avoiding false auth failures
+- added adaptive runner detection: root+`/home/ccbot` uses `ccbot`, otherwise current-user Claude works out of the box
+- added optional `--smoke` install flag for a live end-to-end scratch dispatch test
+- forwarded `CLAUDE_CODE_OAUTH_TOKEN` into runner executions and normalized Claude model aliases
 
 ## X post
 
@@ -108,7 +109,7 @@ Fast install:
 `openclaw skills install openclaw-claude-delegate`
 
 Or:
-`curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.5/install.sh | bash -s -- --version v0.2.5`
+`curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.6/install.sh | bash -s -- --version v0.2.6`
 
 ### Post 5
 Repo:
@@ -130,7 +131,7 @@ It gives you:
 
 Install:
 - `openclaw skills install openclaw-claude-delegate`
-- `curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.5/install.sh | bash -s -- --version v0.2.5`
+- `curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.6/install.sh | bash -s -- --version v0.2.6`
 
 Repo:
 https://github.com/StoicEnso/openclaw-claude-delegate

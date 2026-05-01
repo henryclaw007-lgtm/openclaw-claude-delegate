@@ -57,6 +57,10 @@ build_runner_prefix() {
   else
     RUNNER_PREFIX=(env)
   fi
+
+  if [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
+    RUNNER_PREFIX+=(CLAUDE_CODE_OAUTH_TOKEN="$CLAUDE_CODE_OAUTH_TOKEN")
+  fi
 }
 
 augment_prompt_for_context() {
@@ -149,6 +153,50 @@ resolve_claude_base_cmd() {
   if [ -n "$permission_mode" ]; then
     CLAUDE_BASE_CMD+=(--permission-mode "$permission_mode")
   fi
+}
+
+normalize_claude_model() {
+  local model="${1:-}"
+  local normalized
+
+  [ -n "$model" ] || return 0
+
+  normalized="${model,,}"
+  normalized="${normalized#claude-cli/}"
+  normalized="${normalized#anthropic/}"
+
+  case "$normalized" in
+    default|best|opus|sonnet|haiku|opusplan|opus\[1m\]|sonnet\[1m\]|haiku\[1m\])
+      printf '%s\n' "$normalized"
+      return 0
+      ;;
+    claude-opus-*)
+      if [[ "$normalized" == *1m* ]]; then
+        printf 'opus[1m]\n'
+      else
+        printf 'opus\n'
+      fi
+      return 0
+      ;;
+    claude-sonnet-*)
+      if [[ "$normalized" == *1m* ]]; then
+        printf 'sonnet[1m]\n'
+      else
+        printf 'sonnet\n'
+      fi
+      return 0
+      ;;
+    claude-haiku-*)
+      if [[ "$normalized" == *1m* ]]; then
+        printf 'haiku[1m]\n'
+      else
+        printf 'haiku\n'
+      fi
+      return 0
+      ;;
+  esac
+
+  printf '%s\n' "$model"
 }
 
 emit_acpx_stream_json() {
@@ -346,6 +394,7 @@ run_claude_stream() {
   local delegate_system_prompt=""
 
   resolve_claude_base_cmd
+  model="$(normalize_claude_model "$model")"
   local -a cmd=("${CLAUDE_BASE_CMD[@]}" --print --output-format stream-json --verbose --max-budget-usd "$budget" --model "$model")
   if [ -n "${CC_ADD_DIRS:-}" ]; then
     IFS=':' read -r -a add_dirs <<< "$CC_ADD_DIRS"

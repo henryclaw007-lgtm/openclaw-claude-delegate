@@ -17,10 +17,18 @@ The real advantage is the **local delegated non-root `bypassPermissions` lane**.
 ### Recommended bootstrap
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.3/install.sh | bash -s -- --version v0.2.3
+curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.6/install.sh | bash -s -- --version v0.2.6
 ```
 
-That installs the skill into `~/.openclaw/skills/claude-delegate`, creates `~/.local/bin/claude-delegate`, and runs a setup check.
+That installs the skill into `~/.agents/skills/claude-delegate` by default, creates `~/.local/bin/claude-delegate`, and runs a setup check using the same runner/OAuth environment as the wrapper.
+
+To force an end-to-end live test during install:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/StoicEnso/openclaw-claude-delegate/v0.2.6/install.sh | bash -s -- --version v0.2.6 --smoke
+```
+
+The smoke test dispatches the `scratch` profile and should return `CLAUDE-DELEGATE-SMOKE-OK`.
 
 ### Clone/install flow
 
@@ -34,12 +42,13 @@ That installs the skill into `~/.openclaw/skills/claude-delegate`, creates `~/.l
    - `CLAUDE_BIN`
    - `CLAUDE_PERMISSION_MODE`
    - `CLAUDE_BACKEND`
+   - `CLAUDE_OAUTH_ENV_FILE`
 6. Run `claude-delegate doctor` or `bash scripts/claude-delegate.sh doctor`.
 
 ## Install result
 
 After a normal install you should have:
-- skill folder: `~/.openclaw/skills/claude-delegate`
+- skill folder: `~/.agents/skills/claude-delegate`
 - CLI path: `~/.local/bin/claude-delegate`
 - repo-level delegate guidance file: `CLAUDE.delegate.md`
 
@@ -107,6 +116,11 @@ If your host uses different source paths, override them before calling the wrapp
 - `ROOT_CLAUDE_CREDS`
 - `ROOT_ACPX_CONFIG`
 - `DEFAULT_ACPX_SPEC`
+
+The wrapper is adaptive:
+- if run as root and `/home/ccbot` exists, it defaults to `CLAUDE_RUNNER_USER=ccbot`;
+- otherwise it runs as the current user with the current `claude` binary;
+- if `CLAUDE_OAUTH_ENV_FILE` exists, it is sourced and `CLAUDE_CODE_OAUTH_TOKEN` is forwarded into the runner environment.
 
 ## ACP vs delegate lane
 
